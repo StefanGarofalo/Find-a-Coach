@@ -7,7 +7,7 @@
     </div>
     <div class="actions">
       <BaseButton mode="outline" link :to="coachContactPath">Contact</BaseButton>
-      <BaseButton link :to="coachDetailsPath">View details</BaseButton>
+      <BaseButton link :to="coachDetailPath">View details</BaseButton>
     </div>
   </li>
 </template>
@@ -23,7 +23,7 @@ export default {
         coachContactPath() {
             return this.$route.path + '/' + this.id + "/contact";
         },
-        coachDetailsPath() {
+        coachDetailPath() {
             return this.$route.path + '/' + this.id;
         }
     },
