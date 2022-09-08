@@ -6,7 +6,7 @@
     <BaseCard>
       <div class="controls">
         <BaseButton mode="outline">Refresh</BaseButton>
-        <BaseButton link to="/register">Register as Coach</BaseButton>
+        <BaseButton v-if="!isCoach" link to="/register">Register as Coach</BaseButton>
       </div>
       <ul v-if="hasCoaches">
         <CoachItem v-for="coach in filteredCoachList" :key="coach.id" v-bind="coach"/>
@@ -35,14 +35,21 @@ export default {
     }
   },
   computed: {
+    isCoach(){
+      return this.$store.getters['coaches/isCoach']
+    },
     filteredCoachList() {
-        const coaches = this.$store.getters["coaches/getAllCoaches"];
-        return coaches.filter(coach => {
-          if(this.activeFilters.frontend && coach.areas.includes('frontend')) return true
-          if(this.activeFilters.backend && coach.areas.includes('backend')) return true
-          if(this.activeFilters.career && coach.areas.includes('career')) return true
-          return false
-        })
+      const coaches = this.$store.getters["coaches/getAllCoaches"];
+      console.log(coaches)
+      const test = coaches.filter(coach => {
+        console.log(coach)
+        if(this.activeFilters.frontend && coach.areas.includes('frontend')) return true
+        if(this.activeFilters.backend && coach.areas.includes('backend')) return true
+        if(this.activeFilters.career && coach.areas.includes('career')) return true
+        return false
+      })
+      console.log(test)
+      return test
     },
     ...mapGetters("coaches", ["hasCoaches"])
   },
