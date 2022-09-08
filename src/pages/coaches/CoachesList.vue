@@ -40,15 +40,13 @@ export default {
     },
     filteredCoachList() {
       const coaches = this.$store.getters["coaches/getAllCoaches"];
-      console.log(coaches)
       const test = coaches.filter(coach => {
-        console.log(coach)
         if(this.activeFilters.frontend && coach.areas.includes('frontend')) return true
         if(this.activeFilters.backend && coach.areas.includes('backend')) return true
         if(this.activeFilters.career && coach.areas.includes('career')) return true
         return false
       })
-      console.log(test)
+
       return test
     },
     ...mapGetters("coaches", ["hasCoaches"])
