@@ -10,9 +10,9 @@
       <BaseCard>
         <h2>Interested? Reach out!</h2>
         <BaseButton link :to="contactLink">Contact</BaseButton>
+        <RouterView/>
       </BaseCard>
     </header>
-    <RouterView/>
   </section>
   <section>
     <BaseCard>
