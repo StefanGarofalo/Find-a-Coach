@@ -24,6 +24,11 @@ export default {
     const res = await fetch(`https://vue-http-udemy-3b5cd-default-rtdb.europe-west1.firebasedatabase.app/coaches.json`)
     const data = await res.json()
     
+    if(!res.ok){
+      const error = new Error(data.message || 'failed to fetch')
+      throw error
+    }
+
     const coaches = []
     for(const key in data){
       const coach = {

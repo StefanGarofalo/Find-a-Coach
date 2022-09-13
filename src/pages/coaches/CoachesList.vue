@@ -1,4 +1,7 @@
 <template>
+  <BaseDialog :show="!!error" title="error occurred" @close="handleError">
+    <p>{{ error }}</p>
+  </BaseDialog>
   <section>
     <CoachFilter @change-filter="setFilters"/>
   </section>
@@ -6,9 +9,12 @@
     <BaseCard>
       <div class="controls">
         <BaseButton mode="outline" @click="loadCoaches">Refresh</BaseButton>
-        <BaseButton v-if="!isCoach" link to="/register">Register as Coach</BaseButton>
+        <BaseButton v-if="!isCoach && !isLoading" link to="/register">Register as Coach</BaseButton>
       </div>
-      <ul v-if="hasCoaches">
+      <div v-if="isLoading">
+        <BaseSpinner/>
+      </div>
+      <ul v-else-if="hasCoaches">
         <CoachItem v-for="coach in filteredCoachList" :key="coach.id" v-bind="coach"/>
       </ul>
       <h3 v-else>No coaches found.</h3>
@@ -23,10 +29,14 @@ import CoachItem from '../../components/coaches/CoachItem.vue';
 import BaseCard from '../../components/UI/BaseCard.vue';
 import BaseButton from '../../components/UI/BaseButton.vue';
 import CoachFilter from '../../components/coaches/CoachFilter.vue';
+import BaseSpinner from '../../components/UI/BaseSpinner.vue';
+import BaseDialog from '../../components/UI/BaseDialog.vue';
 
 export default {
   data(){
     return{
+      isLoading: false,
+      error: null,
       activeFilters: {
         frontend: true,
         backend: true,
@@ -58,11 +68,20 @@ export default {
     setFilters(updatedFilters){
       this.activeFilters = updatedFilters
     },
-    loadCoaches(){
-      this.$store.dispatch('coaches/callSetCoaches')
+    async loadCoaches(){
+      this.isLoading = true
+      try {
+        await this.$store.dispatch('coaches/callSetCoaches')
+        this.isLoading = false
+      } catch (error) {
+        this.error = error.message || 'something wrong'
+      }
+    },
+    handleError(){
+      this.error = null
     }
   },
-  components: { CoachItem, BaseCard, BaseButton, CoachFilter }
+  components: { CoachItem, BaseCard, BaseButton, CoachFilter, BaseSpinner, BaseDialog }
 }
 </script>
 
