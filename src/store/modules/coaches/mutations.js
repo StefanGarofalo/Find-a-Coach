@@ -1,9 +1,11 @@
 export default {
-  registerCoach(state, payload){
-    state.coaches.push(payload)
-    state.isCoach = true
+  registerCoach(state, payload) {
+    state.coaches.push(payload);
   },
-  setCoaches(state, payload){
-    state.coaches = payload
+  setCoaches(state, payload) {
+    state.coaches = payload;
+  },
+  setFetchTimestamp(state) {
+    state.lastFetch = new Date().getTime();
   }
-}
+};

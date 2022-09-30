@@ -1,34 +1,32 @@
 <template>
   <li>
-    <h3>{{ getFullName }}</h3>
-    <h4> ${{ hourlyRate }}/hour</h4>
+    <h3>{{ fullName }}</h3>
+    <h4>${{ rate }}/hour</h4>
     <div>
-      <BaseBadge v-for="area in areas" :key="area" :title="area" :type="area"/>
+      <base-badge v-for="area in areas" :key="area" :type="area" :title="area"></base-badge>
     </div>
     <div class="actions">
-      <BaseButton mode="outline" link :to="coachContactPath">Contact</BaseButton>
-      <BaseButton link :to="coachDetailPath">View details</BaseButton>
+      <base-button mode="outline" link :to="coachContactLink">Contact</base-button>
+      <base-button link :to="coachDetailsLink">View Details</base-button>
     </div>
   </li>
 </template>
 
 <script>
-import BaseButton from '../UI/BaseButton.vue';
 export default {
-    props: ["id", "firstName", "lastName", "hourlyRate", "areas"],
-    computed: {
-        getFullName() {
-            return this.firstName + " " + this.lastName;
-        },
-        coachContactPath() {
-            return this.$route.path + '/' + this.id + "/contact";
-        },
-        coachDetailPath() {
-            return this.$route.path + '/' + this.id;
-        }
+  props: ['id', 'firstName', 'lastName', 'rate', 'areas'],
+  computed: {
+    fullName() {
+      return this.firstName + ' ' + this.lastName;
     },
-    components: { BaseButton }
-}
+    coachContactLink() {
+      return this.$route.path + '/' + this.id + '/contact'; // /coaches/c1/contact
+    },
+    coachDetailsLink() {
+      return this.$route.path + '/' + this.id; // /coaches/c1
+    },
+  },
+};
 </script>
 
 <style scoped>

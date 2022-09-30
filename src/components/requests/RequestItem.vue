@@ -1,25 +1,25 @@
 <template>
   <li>
     <div>
-      <a :href="link">{{ email }}</a>
+      <a :href="emailLink">{{ email }}</a>
     </div>
     <p>{{ message }}</p>
   </li>
 </template>
 
 <script>
-export default{
+export default {
   props: ['email', 'message'],
   computed: {
-    link(){
-      return 'mailto:' + this.email
+    emailLink() {
+      return 'mailto:' + this.email;
     }
   }
 }
 </script>
 
 <style scoped>
-  li {
+li {
   margin: 1rem 0;
   border: 1px solid #ccc;
   padding: 1rem;

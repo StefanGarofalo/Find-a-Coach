@@ -1,39 +1,43 @@
 <template>
-  <BaseCard>
-    <h2>Find your coach</h2>
+  <base-card>
+    <h2>Find Your Coach</h2>
     <span class="filter-option">
-      <input type="checkbox" id="frontend" checked @change="setFilter"/>
+      <input type="checkbox" id="frontend" checked @change="setFilter" />
       <label for="frontend">Frontend</label>
-      <input type="checkbox" id="backend" checked @change="setFilter"/>
+    </span>
+    <span class="filter-option">
+      <input type="checkbox" id="backend" checked @change="setFilter" />
       <label for="backend">Backend</label>
-      <input type="checkbox" id="career" checked @change="setFilter"/>
+    </span>
+    <span class="filter-option">
+      <input type="checkbox" id="career" checked @change="setFilter" />
       <label for="career">Career</label>
     </span>
-  </BaseCard>
+  </base-card>
 </template>
 
 <script>
 export default {
   emits: ['change-filter'],
-  data(){
-    return{
+  data() {
+    return {
       filters: {
         frontend: true,
         backend: true,
         career: true
       }
-    }
+    };
   },
   methods: {
-    setFilter(event){
-      const inputId = event.target.id
-      const isActive = event.target.checked
+    setFilter(event) {
+      const inputId = event.target.id;
+      const isActive = event.target.checked;
       const updatedFilters = {
         ...this.filters,
         [inputId]: isActive
-      }
-      this.filters = updatedFilters
-      this.$emit('change-filter', updatedFilters)
+      };
+      this.filters = updatedFilters;
+      this.$emit('change-filter', updatedFilters);
     }
   }
 }

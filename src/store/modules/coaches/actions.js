@@ -1,47 +1,63 @@
 export default {
-  async registerCoach(context, data){
-    const coachId = context.rootGetters.getId
+  async registerCoach(context, data) {
+    const userId = context.rootGetters.userId;
     const coachData = {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      areas: data.areas,
-      description:  data.description,
-      hourlyRate: data.rate
-    }
+      firstName: data.first,
+      lastName: data.last,
+      description: data.desc,
+      hourlyRate: data.rate,
+      areas: data.areas
+    };
 
-    /*const res = */await fetch(`https://vue-http-udemy-3b5cd-default-rtdb.europe-west1.firebasedatabase.app/coaches/${coachId}.json`, {
-      method: 'PUT',
-      body: JSON.stringify(coachData)
-    })
-    //const data = await res.json()
+    const response = await fetch(
+      `https://vue-http-demo-85e9e.firebaseio.com/coaches/${userId}.json`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(coachData)
+      }
+    );
+
+    // const responseData = await response.json();
+
+    if (!response.ok) {
+      // error ...
+    }
 
     context.commit('registerCoach', {
-      coachId,
-      ...coachData
-    })
+      ...coachData,
+      id: userId
+    });
   },
-  async callSetCoaches(context){
-    const res = await fetch(`https://vue-http-udemy-3b5cd-default-rtdb.europe-west1.firebasedatabase.app/coaches.json`)
-    const data = await res.json()
-    
-    if(!res.ok){
-      const error = new Error(data.message || 'failed to fetch')
-      throw error
+  async loadCoaches(context, payload) {
+    if (!payload.forceRefresh && !context.getters.shouldUpdate) {
+      return;
     }
 
-    const coaches = []
-    for(const key in data){
+    const response = await fetch(
+      `https://vue-http-demo-85e9e.firebaseio.com/coaches.json`
+    );
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      const error = new Error(responseData.message || 'Failed to fetch!');
+      throw error;
+    }
+
+    const coaches = [];
+
+    for (const key in responseData) {
       const coach = {
         id: key,
-        firstName: data[key].firstName,
-        lastName: data[key].lastName,
-        areas: data[key].areas,
-        description:  data[key].description,
-        hourlyRate: data[key].rate
-      }
-      coaches.push(coach)
+        firstName: responseData[key].firstName,
+        lastName: responseData[key].lastName,
+        description: responseData[key].description,
+        hourlyRate: responseData[key].hourlyRate,
+        areas: responseData[key].areas
+      };
+      coaches.push(coach);
     }
-    
-    context.commit('setCoaches', coaches)
+
+    context.commit('setCoaches', coaches);
+    context.commit('setFetchTimestamp');
   }
-}
+};

@@ -1,50 +1,54 @@
 <template>
   <form @submit.prevent="submitForm">
     <div class="form-control">
-      <label for="email">Email</label>
-      <input type="email" id="email" v-model.trim="email"/>
+      <label for="email">Your E-Mail</label>
+      <input type="email" id="email" v-model.trim="email" />
     </div>
     <div class="form-control">
       <label for="message">Message</label>
-      <textarea rows="5" id="message" v-model.trim="message"/>
+      <textarea rows="5" id="message" v-model.trim="message"></textarea>
     </div>
-    <p class="errors" v-if="!formIsValid">Enter valid email and non-empty message</p>
+    <p class="errors" v-if="!formIsValid">Please enter a valid email and non-empty message.</p>
     <div class="actions">
-      <BaseButton>Send Message</BaseButton>
+      <base-button>Send Message</base-button>
     </div>
   </form>
 </template>
 
 <script>
-export default{
-  data(){
-    return{
+export default {
+  data() {
+    return {
       email: '',
       message: '',
-      formIsValid: true
-    }
+      formIsValid: true,
+    };
   },
   methods: {
-    submitForm(){
-      this.formIsValid = true
-      if(this.email === '' || !this.email.includes('@') || this.message === ''){
-        this.formIsValid = false
-        return
+    submitForm() {
+      this.formIsValid = true;
+      if (
+        this.email === '' ||
+        !this.email.includes('@') ||
+        this.message === ''
+      ) {
+        this.formIsValid = false;
+        return;
       }
-      this.$store.dispatch('requests/callAddRequest', {
+      this.$store.dispatch('requests/contactCoach', {
         email: this.email,
         message: this.message,
         coachId: this.$route.params.id
-      })
+      });
+      this.$router.replace('/coaches');
 
-      this.$router.replace('/coaches')
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
-  form {
+form {
   margin: 1rem;
   border: 1px solid #ccc;
   border-radius: 12px;
