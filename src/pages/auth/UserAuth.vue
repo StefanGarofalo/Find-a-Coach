@@ -1,62 +1,93 @@
 <template>
-  <base-card>
-    <form @submit.prevent="submitForm">
-      <div class="form-control">
-        <label for="email">E-Mail</label>
-        <input type="email" id="email" v-model.trim="email"/>
-      </div>
-      <div class="form-control">
-        <label for="password">Password</label>
-        <input type="password" id="password" v-model.trim="password"/>
-      </div>
-      <p v-if="!formIsValid" class="error">Enter valid email and password (6 characters)</p>
-      <base-button>{{ authCaption }}</base-button>
-      <base-button type="button" mode="flat" @click="switchAuthMode">{{ switchAuthCaption }}</base-button>
-    </form>
-  </base-card>
+  <div>
+    <BaseDialog :show="!!error" title="Error occurred" @close="handleError">
+      <p>{{ error }}</p>
+      <BaseSpinner></BaseSpinner>
+    </BaseDialog>
+    <BaseDialog :show="isLoading" fixed title="Authenticating...">
+      <BaseSpinner></BaseSpinner>
+    </BaseDialog>
+    <base-card>
+      <form @submit.prevent="submitForm">
+        <div class="form-control">
+          <label for="email">E-Mail</label>
+          <input type="email" id="email" v-model.trim="email"/>
+        </div>
+        <div class="form-control">
+          <label for="password">Password</label>
+          <input type="password" id="password" v-model.trim="password"/>
+        </div>
+        <p v-if="!formIsValid" class="error">Enter valid email and password (6 characters)</p>
+        <base-button>{{ authCaption }}</base-button>
+        <base-button type="button" mode="flat" @click="switchAuthMode">{{ switchAuthCaption }}</base-button>
+      </form>
+    </base-card>
+  </div>
 </template>
 
 <script>
+import BaseDialog from '../../components/UI/BaseDialog.vue'
+import BaseSpinner from '../../components/UI/BaseSpinner.vue';
+
 export default{
-  data(){
-    return{
-      email: '',
-      password: '',
-      formIsValid: true,
-      mode: 'login'
-    }
-  },
-  computed: {
-    authCaption(){
-      if(this.mode === 'login') return 'Login'
-      else return 'signup'
+    data() {
+        return {
+            email: "",
+            password: "",
+            formIsValid: true,
+            mode: "login",
+            isLoading: false,
+            error: null
+        };
     },
-    switchAuthCaption(){
-      if(this.mode === 'login') return 'Signup'
-      else return 'Login'
-    }
-  },
-  methods: {
-    submitForm(){
-      this.formIsValid = true
-      if(!this.email || !this.email.includes('@') || this.password.length < 6){
-        this.formIsValid = false
-        return
-      }
-      
-      if(this.mode === 'login'){ 
-        //login
-      }
-      else this.$store.dispatch('signup', {
-        email: this.email,
-        password: this.password
-      })
+    computed: {
+        authCaption() {
+            if (this.mode === "login")
+                return "Login";
+            else
+                return "signup";
+        },
+        switchAuthCaption() {
+            if (this.mode === "login")
+                return "Signup";
+            else
+                return "Login";
+        }
     },
-    switchAuthMode(){
-      if(this.mode === 'login') this.mode = 'signup'
-      else this.mode = 'login'
-    }
-  }
+    methods: {
+        async submitForm() {
+            this.formIsValid = true;
+            if (!this.email || !this.email.includes("@") || this.password.length < 6) {
+                this.formIsValid = false;
+                return;
+            }
+            this.isLoading = true;
+            try {
+                if (this.mode === "login") {
+                    //login
+                }
+                else
+                    await this.$store.dispatch("signup", {
+                        email: this.email,
+                        password: this.password
+                    });
+            }
+            catch (err) {
+                this.error = err.message || "Failed to auth";
+            }
+            this.isLoading = false;
+        },
+        switchAuthMode() {
+            if (this.mode === "login")
+                this.mode = "signup";
+            else
+                this.mode = "login";
+        },
+        handleError() {
+          this.error = null
+        }
+    },
+    components: { BaseDialog, BaseSpinner }
 }
 </script>
 
