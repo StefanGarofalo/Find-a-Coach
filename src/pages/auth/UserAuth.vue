@@ -76,7 +76,7 @@ export default{
                     });
             }
             catch (err) {
-                this.error = err.message || "Failed to auth";
+                this.error = err.message || "Failed to auth"
             }
             this.isLoading = false;
         },
