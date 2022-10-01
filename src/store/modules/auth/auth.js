@@ -14,6 +14,29 @@ const authModule = {
     }
   },
   actions: {
+    async login(context, payload){
+      const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDKijAAMOqyLPPVntw6qq_818l06yulWsA',{
+        method: 'POST',
+        body: JSON.stringify({
+          email: payload.email,
+          password: payload.password,
+          returnSecureToken: true
+        })
+      })
+
+      const data = await response.json()
+
+      if(!response.ok){
+        throw new Error(data.message || 'Failed to auth')
+      }
+
+      context.commit('setUser', {
+        token: data.idToken,
+        userId: data.localId,
+        expire: data.expiresIn
+      })
+    },
+
     async signup(context, payload){
       const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDKijAAMOqyLPPVntw6qq_818l06yulWsA',{
         method: 'POST',
@@ -30,14 +53,12 @@ const authModule = {
         throw new Error(data.message || 'Failed to auth')
       }
 
-      console.log(data)
       context.commit('setUser', {
         token: data.idToken,
         userId: data.localId,
         expire: data.expiresIn
       })
-    },
-    login(){}
+    }
   },
   getters: {
     userId(state) {

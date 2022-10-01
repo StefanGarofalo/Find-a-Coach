@@ -64,7 +64,10 @@ export default{
             this.isLoading = true;
             try {
                 if (this.mode === "login") {
-                    //login
+                    await this.$store.dispatch('login', {
+                        email: this.email,
+                        password: this.password
+                    });
                 }
                 else
                     await this.$store.dispatch("signup", {
