@@ -14,8 +14,15 @@ const authModule = {
     }
   },
   actions: {
+    logout(context){
+      context.commit('setUser', {
+        userId: null,
+        token: null,
+        expire: null
+      })
+    },
     async login(context, payload){
-      const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDKijAAMOqyLPPVntw6qq_818l06yulWsA',{
+      const response = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDKijAAMOqyLPPVntw6qq_818l06yulWsA ',{
         method: 'POST',
         body: JSON.stringify({
           email: payload.email,
