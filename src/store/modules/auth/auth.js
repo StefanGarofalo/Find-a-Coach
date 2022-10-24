@@ -14,14 +14,30 @@ const authModule = {
     }
   },
   actions: {
+    autoLogin(context){
+      const token = localStorage.getItem('token')
+      const userId = localStorage.getItem('userId')
+
+      if(token && userId){
+        context.commit('setUser', {
+          token,
+          userId,
+          expire: null
+        })
+      }
+    },
+
     logout(context){
+      localStorage.removeItem('token')
+      localStorage.removeItem('userId')
+
       context.commit('setUser', {
         userId: null,
         token: null,
         expire: null
       })
     },
-    
+
     async login(context, payload){
       return context.dispatch('auth', { ...payload, mode: 'login' })
     },
@@ -51,6 +67,9 @@ const authModule = {
         if(!response.ok){
           throw new Error(data.message || 'Failed to auth')
         }
+        
+        localStorage.setItem('token', data.idToken)
+        localStorage.setItem('userId', data.localId)
 
         context.commit('setUser', {
           token: data.idToken,
@@ -58,6 +77,7 @@ const authModule = {
           expire: data.expiresIn
         })
       }
+
       if(mode === 'signup'){
         const response = await fetch(url, {
           method: 'POST',
@@ -73,6 +93,9 @@ const authModule = {
         if(!response.ok){
           throw new Error(data.message || 'Failed to auth')
         }
+
+        localStorage.setItem('token', data.idToken)
+        localStorage.setItem('userId', data.localId)
 
         context.commit('setUser', {
           token: data.idToken,
