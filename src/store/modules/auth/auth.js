@@ -1,28 +1,43 @@
+let timer
+
 const authModule = {
   state() {
     return {
       userId: null,
       token: null,
-      expire: null
+      didAutoLogout: null
     };
   },
   mutations: {
     setUser(state, payload){
       state.token = payload.token
       state.userId = payload.userId
-      state.expire = payload.expire
+      state.didAutoLogout = false
+    },
+
+    setAutoLogout(state){
+      state.didAutoLogout = true
     }
   },
   actions: {
     autoLogin(context){
       const token = localStorage.getItem('token')
       const userId = localStorage.getItem('userId')
+      const expire = localStorage.getItem('expire')
+
+      const expiresIn = +expire - new Date().getTime()
+      if(expiresIn < 10000){
+        return
+      }
+
+      timer = setTimeout(() => {
+        context.dispatch('autoLogout')
+      }, expiresIn)
 
       if(token && userId){
         context.commit('setUser', {
           token,
           userId,
-          expire: null
         })
       }
     },
@@ -30,11 +45,14 @@ const authModule = {
     logout(context){
       localStorage.removeItem('token')
       localStorage.removeItem('userId')
+      localStorage.removeItem('expire')
 
+      clearTimeout(timer)
+
+      
       context.commit('setUser', {
         userId: null,
-        token: null,
-        expire: null
+        token: null
       })
     },
 
@@ -44,6 +62,11 @@ const authModule = {
 
     async signup(context, payload){
       return context.dispatch('auth', { ...payload, mode: 'login' })
+    },
+
+    autoLogout(context){
+      context.dispatch('logout')
+      context.commit('setAutoLogout')
     },
 
     async auth(context, payload){
@@ -68,13 +91,20 @@ const authModule = {
           throw new Error(data.message || 'Failed to auth')
         }
         
+        const expiresIn = +data.expiresIn * 1000
+        const expireDate = new Date().getTime() + expiresIn
+        
         localStorage.setItem('token', data.idToken)
         localStorage.setItem('userId', data.localId)
+        localStorage.setItem('expire', expireDate)
+
+        timer = setTimeout(() => {
+          context.dispatch('autoLogout')
+        }, expiresIn)
 
         context.commit('setUser', {
           token: data.idToken,
           userId: data.localId,
-          expire: data.expiresIn
         })
       }
 
@@ -94,13 +124,20 @@ const authModule = {
           throw new Error(data.message || 'Failed to auth')
         }
 
+        const expiresIn = +data.expiresIn * 1000
+        const expireDate = new Date().getTime() + expiresIn
+        
         localStorage.setItem('token', data.idToken)
         localStorage.setItem('userId', data.localId)
+        localStorage.setItem('expire', expireDate)
+
+        timer = setTimeout(() => {
+          context.dispatch('autoLogout')
+        }, expiresIn)
 
         context.commit('setUser', {
           token: data.idToken,
           userId: data.localId,
-          expire: data.expiresIn
         })
       }
     }
@@ -115,6 +152,9 @@ const authModule = {
     },
     isAuthenticated(state){
       return !!state.token
+    },
+    didAutoLogout(state){
+      return state.didAutoLogout
     }
   }
 }
